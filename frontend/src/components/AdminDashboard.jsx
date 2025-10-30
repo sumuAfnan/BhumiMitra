@@ -529,33 +529,42 @@ const handleLogout = () => {
           {/* Dashboard Tab */}
           {activeTab === "dashboard" && (
             <>
-              <h2 className="text-lg font-semibold mb-4 sm:mb-6">Dashboard</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-4xl mx-auto">
+             <h2 className="text-lg font-semibold mb-4 sm:mb-6">Dashboard</h2>
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-4xl mx-auto">
+
+
                 <div
-                  onClick={() => setActiveTab("userData")}
-                  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
-                >
+  onClick={() => setActiveTab("userData")}
+  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
+>
                   <img src={AdminUser} alt="User Data" className="w-20 h-20" />
                   <p className="mt-2 font-medium text-center">User Data</p>
                 </div>
                 <div
-                  onClick={() => setActiveTab("officerData")}
-                  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
-                >
+  onClick={() => setActiveTab("officerData")}
+  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
+>
                   <img src={Officer} alt="Officer Data" className="w-20 h-20" />
                   <p className="mt-2 font-medium text-center">Officer Data</p>
                 </div>
-                <div
-                  onClick={() => setActiveTab("ownershipInfo")}
-                  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
-                >
+               <div
+  onClick={() => setActiveTab("ownershipInfo")}
+  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
+>
                   <img src={List} alt="Ownership Info" className="w-20 h-20" />
                   <p className="mt-2 font-medium text-center">Ownership Info</p>
                 </div>
-                <div
-                  onClick={() => setActiveTab("citizensQuestion")}
-                  className="flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200 sm:col-span-2 lg:col-span-1 lg:col-start-2"
-                >
+              <div
+  onClick={() => setActiveTab("citizensQuestion")}
+  className="
+    flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200
+    md:col-span-1        /* medium: 2nd row alongside Ownership */
+    lg:col-start-2       /* large: start column 2 (Officer below) */
+    lg:row-start-2        /* large: 2nd row */
+    lg:col-span-1         /* large: single column */
+  "
+>
+
                   <img src={Question} alt="Citizens Question" className="w-20 h-20" />
                   <p className="mt-2 font-medium text-center">Citizens Question</p>
                 </div>
@@ -690,53 +699,56 @@ const handleLogout = () => {
       </button>
     </div>
 
-    {/* Officer List Table */}
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse border border-gray-300 text-left text-sm">
-        <thead className="bg-blue-100">
-          <tr>
-            <th className="border px-2 py-1">Role</th>
-            <th className="border px-2 py-1">Email</th>
-            <th className="border px-2 py-1">Password</th>
-            <th className="border px-2 py-1">Actions</th>
+   {/* Officer List Table */}
+{/* Officer List Table */}
+<div className="w-full overflow-x-auto md:overflow-x-auto lg:overflow-x-visible">
+  <table className="w-[900px] md:w-[900px] lg:w-full border-collapse border border-gray-300 text-left text-sm">
+    <thead className="bg-blue-100 sticky top-0 z-10">
+      <tr>
+        <th className="border px-2 py-1">Role</th>
+        <th className="border px-2 py-1">Email</th>
+        <th className="border px-2 py-1">Password</th>
+        <th className="border px-2 py-1">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {officerData.length > 0 ? (
+        officerData.map((officer) => (
+          <tr key={officer.id} className="hover:bg-gray-100 text-xs">
+            <td className="border px-2 py-1">{officer.role}</td>
+            <td className="border px-2 py-1">{officer.email}</td>
+            <td className="border px-2 py-1">{officer.password}</td>
+            <td className="border px-2 py-1">
+              <button
+                onClick={async () => {
+                  try {
+                    await deleteOfficer(officer.id);
+                    const updatedOfficers = await getOfficers();
+                    setOfficerData(updatedOfficers);
+                  } catch (error) {
+                    console.error("Error deleting officer:", error);
+                  }
+                }}
+                className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition"
+              >
+                Delete
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {officerData.length > 0 ? (
-            officerData.map((officer) => (
-              <tr key={officer.id} className="hover:bg-gray-100 text-xs">
-                <td className="border px-2 py-1">{officer.role}</td>
-                <td className="border px-2 py-1">{officer.email}</td>
-                <td className="border px-2 py-1">{officer.password}</td>
-                <td className="border px-2 py-1">
-                  <button
-                    onClick={async () => {
-                      try {
-                        await deleteOfficer(officer.id);
-                        const updatedOfficers = await getOfficers();
-                        setOfficerData(updatedOfficers);
-                      } catch (error) {
-                        console.error("Error deleting officer:", error);
-                      }
-                    }}
-                    className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={4} className="text-center py-2 text-gray-500 text-sm">
-                No officer found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  </div>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={4} className="text-center py-2 text-gray-500 text-sm">
+            No officer found
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
+</div>
+
 )}
 
 
