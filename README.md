@@ -1,0 +1,2 @@
+# BhumiMitra
+BhumiMitra is a unified land management system that streamlines land registration, ownership verification,ownership transfer and officer management.
