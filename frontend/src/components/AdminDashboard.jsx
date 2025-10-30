@@ -558,10 +558,10 @@ const handleLogout = () => {
   onClick={() => setActiveTab("citizensQuestion")}
   className="
     flex flex-col items-center bg-white border border-blue-200 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow duration-200
-    md:col-span-1        /* medium: 2nd row alongside Ownership */
-    lg:col-start-2       /* large: start column 2 (Officer below) */
-    lg:row-start-2        /* large: 2nd row */
-    lg:col-span-1         /* large: single column */
+    md:col-span-1      
+    lg:col-start-2       
+    lg:row-start-2       
+    lg:col-span-1        
   "
 >
 
@@ -699,7 +699,6 @@ const handleLogout = () => {
       </button>
     </div>
 
-   {/* Officer List Table */}
 {/* Officer List Table */}
 <div className="w-full overflow-x-auto md:overflow-x-auto lg:overflow-x-visible">
   <table className="w-[900px] md:w-[900px] lg:w-full border-collapse border border-gray-300 text-left text-sm">
