@@ -858,7 +858,7 @@ officerDB.connect(err => {
   }
 });
 
-// ✅ Ownership Officer Login API
+//  Ownership Officer Login API
 app.post('/api/ownership-officer/login', (req, res) => {
 
   const { email, password, role } = req.body;
@@ -902,7 +902,7 @@ app.post("/userowner", (req, res) => {
     return res.status(400).json({ error: "All fields are required!" });
   }
 
-  // 1️⃣ Check if ownership record exists
+  //  Check if ownership record exists
   const checkQuery = `
     SELECT * FROM ownership_records 
     WHERE current_owner = ? AND khatian = ? AND area = ?
@@ -918,10 +918,10 @@ app.post("/userowner", (req, res) => {
       return res.status(404).json({ error: "Ownership record not found or mismatch!" });
     }
 
-    // 2️⃣ Generate Application ID
+    //  Generate Application ID
     const applicationId = "APP-" + crypto.randomBytes(4).toString("hex").toUpperCase();
 
-    // 3️⃣ Update ownership record with new owner info
+    //  Update ownership record with new owner info
     const updateQuery = `
       UPDATE ownership_records
       SET new_owner = ?, nid = ?, gmail = ?, status = ?, application_id = ?
@@ -937,7 +937,7 @@ app.post("/userowner", (req, res) => {
           return res.status(500).json({ error: "Update failed!" });
         }
 
-        // 4️⃣ Send confirmation email to new owner
+        //  Send confirmation email to new owner
         const mailOptions = {
           from: "samm181075@gmail.com",
           to: gmail,
@@ -953,7 +953,7 @@ app.post("/userowner", (req, res) => {
           }
         });
 
-        // 5️⃣ Fetch updated record to return to frontend
+        //  Fetch updated record to return to frontend
         const selectUpdatedQuery = `
           SELECT id, application_id, previous_owner, current_owner, area, khatian, nid, gmail, new_owner, status
           FROM ownership_records
@@ -980,7 +980,7 @@ app.post("/userowner", (req, res) => {
 app.put("/userowner/:applicationId", (req, res) => {
   const { applicationId } = req.params;
 
-  // 1️⃣ Find the record by application_id
+  //  Find the record by application_id
   const selectQuery = `
     SELECT * FROM ownership_records
     WHERE application_id = ?
@@ -998,7 +998,7 @@ app.put("/userowner/:applicationId", (req, res) => {
 
     
 
-    // 2️⃣ Update ownership: set current_owner = new_owner, clear new_owner, mark Approved
+    //  Update ownership: set current_owner = new_owner, clear new_owner, mark Approved
     const updateQuery = `
       UPDATE ownership_records
       SET previous_owner = current_owner,
@@ -1014,7 +1014,7 @@ app.put("/userowner/:applicationId", (req, res) => {
         return res.status(500).json({ error: "Failed to approve transfer!" });
       }
 
-      // 3️⃣ Fetch and return updated record
+      //  Fetch and return updated record
       const selectUpdatedQuery = `
         SELECT id, application_id, previous_owner, current_owner, area, khatian, nid, gmail, new_owner, status
         FROM ownership_records
