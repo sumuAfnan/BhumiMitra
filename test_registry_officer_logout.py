@@ -19,7 +19,7 @@ class RegistryOfficerLogoutAutoTest(unittest.TestCase):
         wait = self.wait
 
         #  Step 1: Open Dashboard page
-        driver.get("http://localhost:5176/RegistryOfficer")
+        driver.get("http://localhost:5173/RegistryOfficer")
         print("\n Registry Officer Dashboard ")
 
         #  Step 2: Wait for Logout button (text case check)
