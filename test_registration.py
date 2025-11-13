@@ -10,13 +10,13 @@ driver = webdriver.Chrome()
 driver.maximize_window()
 
 # Step 1️⃣ — Go to registration page
-driver.get("http://localhost:5176/register")
+driver.get("http://localhost:5173/register")
 wait = WebDriverWait(driver, 10)
 
 # Step 2️⃣ — Prepare test data
 rand_num = random.randint(1000, 9999)
 full_name = f"Sumu Tester {rand_num}"
-nid = "1112"  # fixed NID
+nid = "678"  # fixed NID
 email = f"sumutest{rand_num}@gmail.com"
 username = f"sumu{rand_num}"
 password = "12345"

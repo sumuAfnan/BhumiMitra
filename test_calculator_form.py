@@ -16,7 +16,7 @@ class CalculatorFormTest(unittest.TestCase):
         driver = self.driver
         wait = self.wait
 
-        driver.get("http://localhost:5176/RegistryOfficer")
+        driver.get("http://localhost:5173/RegistryOfficer")
         print("\n🌐 Opened Registry Officer Portal page")
 
         # Wait for table and get first application ID

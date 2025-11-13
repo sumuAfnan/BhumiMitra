@@ -10,7 +10,7 @@ driver = webdriver.Chrome()
 driver.maximize_window()
 
 # Go to Land Registration form page
-driver.get("http://localhost:5176/land-form")
+driver.get("http://localhost:5174/land-form")
 wait = WebDriverWait(driver, 20)  # Increased wait time to 20 seconds
 
 # Generate random data for testing

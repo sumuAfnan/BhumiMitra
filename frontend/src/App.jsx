@@ -36,7 +36,7 @@ import Aboutlink from './components/Aboutlink';
 import PublicLayout from './components/layout/PublicLayout';
 import NoHeaderLayout from './components/layout/NoHeaderLayout';
 import ComplaintPortal from './components/ComplaintPortal';
-
+import LuxeHeader from './components/LuxeHeader';
 
 function App() {
   return (
@@ -92,6 +92,7 @@ function App() {
         <Route path="/dashboard" element={<AdminDashboard />} />
          <Route path="/OwnershipOfficer"  element={<OwnershipOfficerPortal/>} />
               <Route path="/land-form" element={<LandRegistrationForm />} />
+              <Route path="/h" element={<LuxeHeader/>} />
       </Route>
 
       </Routes>
