@@ -37,10 +37,10 @@ def test_citizen_login():
 
     try:
         success_box = driver.find_element(By.CLASS_NAME, "text-green-700")
-        print("✅ Login test passed:", success_box.text)
+        print(" Login test passed:", success_box.text)
     except:
         driver.save_screenshot("citizen_login_failed.png")
-        assert False, "❌ Login test failed"
+        assert False, " Login test failed"
 
     driver.save_screenshot("citizen_login_test.png")
     driver.quit()
