@@ -14,7 +14,7 @@ class AdminDashboardTabTest(unittest.TestCase):
         cls.wait = WebDriverWait(cls.driver, 20)
 
         # Go to Admin Login page
-        cls.driver.get("http://localhost:5176/loginAdmin")
+        cls.driver.get("http://localhost:5173/loginAdmin")
 
         # Admin credentials
         cls.username = "Sumu"

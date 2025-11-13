@@ -12,7 +12,7 @@ import time
 admin_username = "Sumu"
 admin_email = "samm181075@gmail.com"
 admin_password = "12345"
-login_url = "http://localhost:5176/loginAdmin"
+login_url = "http://localhost:5173/loginAdmin"
 
 # -----------------------------
 # 🔹 Launch Chrome Browser
