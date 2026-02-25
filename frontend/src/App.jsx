@@ -37,6 +37,7 @@ import PublicLayout from './components/layout/PublicLayout';
 import NoHeaderLayout from './components/layout/NoHeaderLayout';
 import ComplaintPortal from './components/ComplaintPortal';
 import LuxeHeader from './components/LuxeHeader';
+import TopBar from './components/TopBar';
 
 function App() {
   return (
@@ -46,12 +47,6 @@ function App() {
          {/* Pages WITH header */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<><Home />    </>} />
-         
-        {/* Admin Routes */}
-      
-      
-      
-    
 
         {/* Citizen Routes */}
    
@@ -93,6 +88,7 @@ function App() {
          <Route path="/OwnershipOfficer"  element={<OwnershipOfficerPortal/>} />
               <Route path="/land-form" element={<LandRegistrationForm />} />
               <Route path="/h" element={<LuxeHeader/>} />
+              <Route path="/top" element={<TopBar/>}/>
       </Route>
 
       </Routes>
