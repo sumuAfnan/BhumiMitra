@@ -29,7 +29,7 @@ export const loginAdmin = async (loginData) => {
 
 //  Forgot Password
 export const forgotPassword = async (email) => {
-  const response = await axios.post(`${BASE_URL}/admin/forgot-password`, { email });
+  const response = await axios.post(`${BASE_URL}/forgot-password`, { email });
   return response.data;
 };
 
