@@ -701,27 +701,98 @@ app.post("/loginAdmin", (req, res) => {
 
 
 app.post("/admin/forgot-password", (req, res) => {
+  console.log("🔥 ADMIN FORGOT PASSWORD ROUTE HIT");
+  console.log("BODY:", req.body);
+
   const { email } = req.body;
-  if (!email) return res.status(400).json({ message: "Email is required" });
 
-  adminDB.query("SELECT * FROM admininfo WHERE email = ?", [email], (err, rows) => {
-    if (err) return res.status(500).json({ message: "DB error" });
-    if (rows.length === 0) return res.status(404).json({ message: "Email not found" });
-
-    const admin = rows[0];
-    const token = jwt.sign({ id: admin.id, email: admin.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    const resetLink = `${process.env.FRONTEND_URL}/reset-adminnewpassword?token=${token}`;
-    transporter.sendMail({
-      from: "samm181075@gmail.com",
-      to: email,
-      subject: "Password Reset - Admin BhumiMitra",
-      html: `<p>Click to reset your admin password:</p><p><a href="${resetLink}">${resetLink}</a></p>`
-    }, (error, info) => {
-      if (error) return res.status(500).json({ message: "Failed to send email", error });
-      return res.json({ success: true, message: "Password reset link sent to your email" });
+  if (!email) {
+    return res.status(400).json({
+      message: "Email is required"
     });
-  });
+  }
+
+  adminDB.query(
+    "SELECT * FROM admininfo WHERE email = ?",
+    [email],
+    (err, rows) => {
+
+      if (err) {
+        console.error("❌ ADMIN DB ERROR:", err);
+
+        return res.status(500).json({
+          message: "DB error",
+          error: err.message
+        });
+      }
+
+      console.log("Admin rows:", rows.length);
+
+      if (rows.length === 0) {
+        console.log("❌ Admin email not found");
+
+        return res.status(404).json({
+          message: "Email not found"
+        });
+      }
+
+      const admin = rows[0];
+
+      console.log("✅ Admin found:", admin.email);
+
+      const token = jwt.sign(
+        {
+          id: admin.id,
+          email: admin.email
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h"
+        }
+      );
+
+      console.log("✅ Token created");
+
+      const resetLink =
+        `${process.env.FRONTEND_URL}/reset-adminnewpassword?token=${token}`;
+
+      console.log("Reset link:", resetLink);
+
+      transporter.sendMail(
+        {
+          from: process.env.GMAIL_USER,
+          to: email,
+          subject: "Password Reset - Admin BhumiMitra",
+          html: `
+            <p>Click to reset your admin password:</p>
+            <p>
+              <a href="${resetLink}">
+                Reset Admin Password
+              </a>
+            </p>
+          `
+        },
+        (error, info) => {
+
+          if (error) {
+            console.error("❌ EMAIL ERROR:", error);
+
+            return res.status(500).json({
+              message: "Failed to send email",
+              error: error.message
+            });
+          }
+
+          console.log("✅ EMAIL SENT:", info.response);
+
+          return res.json({
+            success: true,
+            message: "Password reset link sent to your email"
+          });
+        }
+      );
+    }
+  );
 });
 
 
