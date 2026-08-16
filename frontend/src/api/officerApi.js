@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000"; 
+const BASE_URL = "https://bhumimitra-backend-fvyy.onrender.com"; 
 
 // Bring all officer list
 export const getOfficers = async () => {

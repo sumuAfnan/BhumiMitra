@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000"; 
+const BASE_URL = "https://bhumimitra-backend-fvyy.onrender.com"; 
 
 //  Citizen Registration
 export const registerCitizen = async (formData) => {

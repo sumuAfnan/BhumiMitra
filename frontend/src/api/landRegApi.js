@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api"; 
+const BASE_URL = "https://bhumimitra-backend-fvyy.onrender.com"; 
 
 // ✅ Land Registration (user submits a new application)
 export const registerLand = async (formData) => {

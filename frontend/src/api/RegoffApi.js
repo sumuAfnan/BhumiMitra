@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/registry-officer';
+const API_URL = 'https://bhumimitra-backend-fvyy.onrender.com/api/registry-officer';
 
 export const loginRegistryOfficer = async (loginData) => {
   try {
