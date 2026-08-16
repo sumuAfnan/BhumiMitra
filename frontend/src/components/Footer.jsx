@@ -24,12 +24,12 @@ export default function Footer() {
           </div>
 
           <div className="flex gap-1 mt-1">
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+            <a href="www.linkedin.com/in/sumaiya-akter-74a02842a" target="_blank" rel="noopener noreferrer">
               <div className="bg-blue-600 text-white rounded-full p-1.5">
                 <FaLinkedinIn className="text-xs" />
               </div>
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.facebook.com/sumayia.afnan.36" target="_blank" rel="noopener noreferrer">
               <div className="bg-blue-500 text-white rounded-full p-1.5">
                 <FaFacebookF className="text-xs" />
               </div>
@@ -56,15 +56,15 @@ export default function Footer() {
         <div className="text-[12px] text-gray-700 space-y-1 text-left md:text-right">
           <div className="flex items-center gap-1 leading-none">
             <MdLocationOn className="text-sm text-gray-600" />
-            <span>60 New Road 0708, BD</span>
+            <span>Dohar-Dhaka , BD</span>
           </div>
           <div className="flex items-center gap-1 leading-none">
             <FiPhone className="text-sm text-gray-600" />
-            <span>+15678899999</span>
+            <span>01953*****</span>
           </div>
           <div className="flex items-center gap-1 leading-none">
             <HiOutlineMail className="text-sm text-gray-600" />
-            <a href="mailto:grs@cabinet.gov.bd" className="underline">grs@cabinet.gov.bd</a>
+            <a href="mailto:22201004@uap-bd.edu" className="underline">22201004@uap-bd.edu</a>
           </div>
         </div>
       </div>
