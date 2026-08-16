@@ -31,6 +31,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const userDB = mysql.createConnection({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.USER_DB,
@@ -48,6 +49,7 @@ const userDB = mysql.createConnection({
 // ---------------- Officer DB Connection ----------------//
 const officerDB = mysql.createConnection({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.OFFICER_DB,
@@ -65,6 +67,7 @@ officerDB.connect((err) => {
 // ---------------- Ownership DB Connection ----------------//
 const ownershipDB = mysql.createConnection({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.OWNERSHIP_DB,
@@ -82,6 +85,7 @@ ownershipDB.connect((err) => {
 
 const adminDB = mysql.createConnection({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.ADMIN_DB,
@@ -235,9 +239,9 @@ app.post("/forgot-password", (req, res) => {
     if (rows.length === 0) return res.status(404).json({ message: "Email not found" });
 
     const user = rows[0];
-    const token = jwt.sign({ id: user.id, email: user.email }, "my_secret_key", { expiresIn: "1h" });
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    const resetLink = `http://localhost:5173/reset-newpassword?token=${token}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-newpassword?token=${token}`;
 
     transporter.sendMail({
       from: "samm181075@gmail.com",
@@ -265,7 +269,7 @@ app.post("/reset-newpassword", async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "my_secret_key");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const hashed = await bcrypt.hash(newPassword, 10);
 
    userDB.query("UPDATE citizen_reg SET password = ? WHERE id = ?", [hashed, decoded.id], (err) => {
@@ -705,10 +709,9 @@ app.post("/admin/forgot-password", (req, res) => {
     if (rows.length === 0) return res.status(404).json({ message: "Email not found" });
 
     const admin = rows[0];
-    const token = jwt.sign({ id: admin.id, email: admin.email }, "my_secret_key", { expiresIn: "1h" });
+    const token = jwt.sign({ id: admin.id, email: admin.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    const resetLink = `http://localhost:5173/reset-adminnewpassword?token=${token}`;
-
+    const resetLink = `${process.env.FRONTEND_URL}/reset-adminnewpassword?token=${token}`;
     transporter.sendMail({
       from: "samm181075@gmail.com",
       to: email,
@@ -734,7 +737,7 @@ app.post("/reset-adminnewpassword", (req, res) => {
 
   try {
     
-    const decoded = jwt.verify(token, "my_secret_key");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     adminDB.query("SELECT * FROM admininfo WHERE id = ?", [decoded.id], (err, rows) => {
       if (err) {
@@ -851,13 +854,7 @@ app.put("/admins/:id/credentials", async (req, res) => {
 
 // For officer
 
-officerDB.connect(err => {
-  if (err) {
-    console.log('DB connection error:', err);
-  } else {
-    console.log('MySQL connected!');
-  }
-});
+
 
 //  Ownership Officer Login API
 app.post('/api/ownership-officer/login', (req, res) => {
@@ -1065,9 +1062,13 @@ app.get("/userowner/status/:applicationId", (req, res) => {
 });
 
 
+app.get("/test", (req, res) => {
+  res.json({ message: "Backend is working!" });
+});
 
-// Start server
-app.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
