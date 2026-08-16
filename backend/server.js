@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 dotenv.config();
-
+const { Resend } = require("resend");
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
@@ -12,7 +12,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 const app = express();
@@ -104,15 +104,7 @@ adminDB.connect(err => {
 
 {/*=================== Gmail Connection ======================  */}
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-   user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
-  },
-});
+
 
 
 // ---------------- USER APIs ----------------
@@ -702,7 +694,9 @@ app.post("/loginAdmin", (req, res) => {
 
 // ==================== ADMIN FORGOT PASSWORD ====================
 
-app.post("/admin/forgot-password", (req, res) => {
+// ================= ADMIN FORGOT PASSWORD =================
+
+app.post("/admin/forgot-password", async (req, res) => {
 
   console.log("🔥 ADMIN FORGOT PASSWORD ROUTE HIT");
   console.log("BODY:", req.body);
@@ -721,7 +715,7 @@ app.post("/admin/forgot-password", (req, res) => {
   adminDB.query(
     "SELECT * FROM admininfo WHERE email = ?",
     [email],
-    (err, rows) => {
+    async (err, rows) => {
 
       if (err) {
         console.error("❌ ADMIN DB ERROR:", err);
@@ -755,6 +749,7 @@ app.post("/admin/forgot-password", (req, res) => {
       let token;
 
       try {
+
         token = jwt.sign(
           {
             id: admin.id,
@@ -785,90 +780,101 @@ app.post("/admin/forgot-password", (req, res) => {
 
       console.log("🔗 Reset link:", resetLink);
 
-      // 7. Send email
-      const mailOptions = {
-        from: process.env.GMAIL_USER,
-        to: email,
-        subject: "Password Reset - Admin BhumiMitra",
+      // 7. Send email using RESEND
+      try {
 
-        html: `
-          <div style="font-family: Arial, sans-serif;">
+        const { data, error } = await resend.emails.send({
 
-            <h2>BhumiMitra Admin Password Reset</h2>
+          from: "BhumiMitra <onboarding@resend.dev>",
 
-            <p>Hello Admin,</p>
+          to: [email],
 
-            <p>
-              You requested to reset your admin password.
-            </p>
+          subject: "Password Reset - Admin BhumiMitra",
 
-            <p>
-              Click the button below to create a new password:
-            </p>
+          html: `
+            <div style="font-family: Arial, sans-serif;">
 
-            <p>
-              <a
-                href="${resetLink}"
-                style="
-                  display:inline-block;
-                  padding:12px 20px;
-                  background:#2563eb;
-                  color:white;
-                  text-decoration:none;
-                  border-radius:6px;
-                "
-              >
-                Reset Admin Password
-              </a>
-            </p>
+              <h2>BhumiMitra Admin Password Reset</h2>
 
-            <p>
-              This reset link will expire in <strong>1 hour</strong>.
-            </p>
+              <p>Hello Admin,</p>
 
-            <p>
-              If you did not request this password reset,
-              you can safely ignore this email.
-            </p>
+              <p>
+                You requested to reset your admin password.
+              </p>
 
-            <p>
-              Regards,<br>
-              BhumiMitra Team
-            </p>
+              <p>
+                Click the button below to create a new password:
+              </p>
 
-          </div>
-        `
-      };
+              <p>
+                <a
+                  href="${resetLink}"
+                  style="
+                    display:inline-block;
+                    padding:12px 20px;
+                    background:#2563eb;
+                    color:white;
+                    text-decoration:none;
+                    border-radius:6px;
+                  "
+                >
+                  Reset Admin Password
+                </a>
+              </p>
 
-      transporter.sendMail(
-        mailOptions,
-        (error, info) => {
+              <p>
+                This reset link will expire in
+                <strong>1 hour</strong>.
+              </p>
 
-          // 8. Email failed
-          if (error) {
+              <p>
+                If you did not request this password reset,
+                you can safely ignore this email.
+              </p>
 
-            console.error("❌ EMAIL SEND ERROR:", error);
+              <p>
+                Regards,<br>
+                BhumiMitra Team
+              </p>
 
-            return res.status(500).json({
-              success: false,
-              message: "Failed to send email",
-              error: error.message
-            });
-          }
+            </div>
+          `
+        });
 
-          // 9. Email successfully sent
-          console.log("=================================");
-          console.log("✅ EMAIL SENT SUCCESSFULLY");
-          console.log("To:", email);
-          console.log("Response:", info.response);
-          console.log("=================================");
+        // 8. Resend error
+        if (error) {
 
-          return res.status(200).json({
-            success: true,
-            message: "Password reset link sent to your email"
+          console.error("❌ RESEND EMAIL ERROR:", error);
+
+          return res.status(500).json({
+            success: false,
+            message: "Failed to send email",
+            error: error.message || error
           });
         }
-      );
+
+        // 9. Email successfully sent
+        console.log("=================================");
+        console.log("✅ EMAIL SENT SUCCESSFULLY");
+        console.log("To:", email);
+        console.log("Resend Response:", data);
+        console.log("=================================");
+
+        return res.status(200).json({
+          success: true,
+          message: "Password reset link sent to your email"
+        });
+
+      } catch (emailError) {
+
+        console.error("❌ RESEND SEND ERROR:", emailError);
+
+        return res.status(500).json({
+          success: false,
+          message: "Failed to send email",
+          error: emailError.message
+        });
+      }
 
     }
   );
