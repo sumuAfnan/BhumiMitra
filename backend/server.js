@@ -700,18 +700,24 @@ app.post("/loginAdmin", (req, res) => {
 // -------------------- Forgot Password---------------------// 
 
 
+// ==================== ADMIN FORGOT PASSWORD ====================
+
 app.post("/admin/forgot-password", (req, res) => {
+
   console.log("🔥 ADMIN FORGOT PASSWORD ROUTE HIT");
   console.log("BODY:", req.body);
 
   const { email } = req.body;
 
+  // 1. Check email
   if (!email) {
     return res.status(400).json({
+      success: false,
       message: "Email is required"
     });
   }
 
+  // 2. Find admin from database
   adminDB.query(
     "SELECT * FROM admininfo WHERE email = ?",
     [email],
@@ -721,6 +727,7 @@ app.post("/admin/forgot-password", (req, res) => {
         console.error("❌ ADMIN DB ERROR:", err);
 
         return res.status(500).json({
+          success: false,
           message: "DB error",
           error: err.message
         });
@@ -728,73 +735,144 @@ app.post("/admin/forgot-password", (req, res) => {
 
       console.log("Admin rows:", rows.length);
 
+      // 3. Admin email not found
       if (rows.length === 0) {
-        console.log("❌ Admin email not found");
+        console.log("❌ Admin email not found:", email);
 
         return res.status(404).json({
-          message: "Email not found"
+          success: false,
+          message: "Admin email not found"
         });
       }
 
+      // 4. Admin found
       const admin = rows[0];
 
       console.log("✅ Admin found:", admin.email);
+      console.log("Admin ID:", admin.id);
 
-      const token = jwt.sign(
-        {
-          id: admin.id,
-          email: admin.email
-        },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "1h"
-        }
-      );
+      // 5. Create JWT token
+      let token;
 
-      console.log("✅ Token created");
+      try {
+        token = jwt.sign(
+          {
+            id: admin.id,
+            email: admin.email
+          },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "1h"
+          }
+        );
 
+        console.log("✅ Token created");
+
+      } catch (tokenError) {
+
+        console.error("❌ TOKEN ERROR:", tokenError);
+
+        return res.status(500).json({
+          success: false,
+          message: "Failed to create reset token",
+          error: tokenError.message
+        });
+      }
+
+      // 6. Create reset link
       const resetLink =
         `${process.env.FRONTEND_URL}/reset-adminnewpassword?token=${token}`;
 
-      console.log("Reset link:", resetLink);
+      console.log("🔗 Reset link:", resetLink);
 
-      transporter.sendMail(
-        {
-          from: process.env.GMAIL_USER,
-          to: email,
-          subject: "Password Reset - Admin BhumiMitra",
-          html: `
-            <p>Click to reset your admin password:</p>
+      // 7. Send email
+      const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: email,
+        subject: "Password Reset - Admin BhumiMitra",
+
+        html: `
+          <div style="font-family: Arial, sans-serif;">
+
+            <h2>BhumiMitra Admin Password Reset</h2>
+
+            <p>Hello Admin,</p>
+
             <p>
-              <a href="${resetLink}">
+              You requested to reset your admin password.
+            </p>
+
+            <p>
+              Click the button below to create a new password:
+            </p>
+
+            <p>
+              <a
+                href="${resetLink}"
+                style="
+                  display:inline-block;
+                  padding:12px 20px;
+                  background:#2563eb;
+                  color:white;
+                  text-decoration:none;
+                  border-radius:6px;
+                "
+              >
                 Reset Admin Password
               </a>
             </p>
-          `
-        },
+
+            <p>
+              This reset link will expire in <strong>1 hour</strong>.
+            </p>
+
+            <p>
+              If you did not request this password reset,
+              you can safely ignore this email.
+            </p>
+
+            <p>
+              Regards,<br>
+              BhumiMitra Team
+            </p>
+
+          </div>
+        `
+      };
+
+      transporter.sendMail(
+        mailOptions,
         (error, info) => {
 
+          // 8. Email failed
           if (error) {
-            console.error("❌ EMAIL ERROR:", error);
+
+            console.error("❌ EMAIL SEND ERROR:", error);
 
             return res.status(500).json({
+              success: false,
               message: "Failed to send email",
               error: error.message
             });
           }
 
-          console.log("✅ EMAIL SENT:", info.response);
+          // 9. Email successfully sent
+          console.log("=================================");
+          console.log("✅ EMAIL SENT SUCCESSFULLY");
+          console.log("To:", email);
+          console.log("Response:", info.response);
+          console.log("=================================");
 
-          return res.json({
+          return res.status(200).json({
             success: true,
             message: "Password reset link sent to your email"
           });
         }
       );
+
     }
   );
 });
-
 
 
 
